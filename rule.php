@@ -45,15 +45,18 @@ class quizaccess_insertjs extends quiz_access_rule_base {
     // public function prevent_access() {   // Limitation: Prevents access
     // public function prevent_new_attempt($numprevattempts, $lastattempt) {	
         global $CFG, $PAGE, $_SESSION, $DB, $USER, $HBCFG;
-        $PAGE->requires->jquery();
+        // $PAGE->requires->jquery();
         
         $id = optional_param ( 'id', 0, PARAM_INT );
         $cm = get_coursemodule_from_id ('quiz', $id);
+        // echo "<br>===================cm before========================";
+        // print_object($cm);
+        // echo "<br>===========================================";
     	$result = "";
         $flag = 0;
         
         // Log stmts.
-        echo '<br><br><br>';
+        // echo '<br><br><br>';
         $fn = 'setup_attempt_page';
         $this->debuglog($fn, "begin ---");
         
@@ -62,11 +65,42 @@ class quizaccess_insertjs extends quiz_access_rule_base {
         $sessionkeyJS = json_encode($sessionkey);
         $userid     = $USER->id;
         $username   = $USER->username;
+        
+        // echo "<br>================== this =========================";
+
+        // print_object($this);
+        // echo "<br>===========================================";
+
 
         // Quiz details.
         $quiz       = $this->quizobj->get_quiz();
         $quizid     = $this->quizobj->get_quizid();
         $cmid       = $this->quizobj->get_cmid();
+        list($course, $cm) = get_course_and_cm_from_cmid($cmid, 'quiz');
+        // echo "<br>================= quiz ==========================";
+
+        // print_object($quiz);
+        // echo "<br>================== cm after =========================";
+        // print_object($cm);
+        // echo "<br>===========================================";
+        // Get the course groups.
+        $groups = groups_get_all_groups($cm->course);
+        if ($groups === false) {
+            $groups = array();
+        }
+        // echo "<br>================= groups ==========================";
+
+        // print_object($groups);
+        // echo "<br>==================== User =======================";
+
+        // print_object($USER);
+
+        // Get the current group id.
+        $currentgroupid = groups_get_activity_group($cm);
+        // Get the current group name from the group id.
+        $currentgroupname = groups_get_group_name($currentgroupid);
+        // echo ' current g id ' . $currentgroupid; 
+        // echo ' current g name ' . $currentgroupname; 
 
         if ($unfinishedattempt = quiz_get_user_attempt_unfinished($quiz->id, $USER->id)) {
             $unfinishedattemptid = $unfinishedattempt->id;
@@ -82,22 +116,11 @@ class quizaccess_insertjs extends quiz_access_rule_base {
                 } else {
                     // $flag = 1;
                     // echo "<br><br><br>in if unfinished block ---";
-                    $result .= "<script>
-                        function insertJS() {
-                            $(document).ready(function() {
-                                
-                                $('.submitbtns').prepend(
-                                    $('</br>'),
-                                    $('<p>', {
-                                        'id':'demo'
-                                    }),
-                                    $('</br>')
-                                );
-                                document.getElementById('demo').innerHTML = 'Demo text: ' + '$username';                                
-                            });                        
-                        }
-                        </script>";
-                    $result .= "<script type='text/javascript'>insertJS();</script>";
+                    
+                    if (!empty($quiz->allowjsinsertion)) {
+                        // JS call
+                        $PAGE->requires->js_call_amd('quizaccess_insertjs/etconnect', 'start', array($quiz->name, $USER->firstname, $USER->idnumber, $currentgroupname, $quizid, $username, $userid, $quiz->attempts));
+                    }
                 }
             }
         } else {
@@ -149,9 +172,10 @@ class quizaccess_insertjs extends quiz_access_rule_base {
             }
         }
         // Print log.
-        echo $log;
+        // echo $log;
     }
 
+    // Ref: offlineattempts/rule.php
     public static function add_settings_form_fields(
         mod_quiz_mod_form $quizform, MoodleQuickForm $mform) {
 
@@ -168,6 +192,7 @@ class quizaccess_insertjs extends quiz_access_rule_base {
         $mform->setDefault('allowjsinsertion', 0);
     }
 
+    // Ref: https://github.com/moodleou/moodle-quizaccess_honestycheck
     public static function save_settings($quiz) {
         global $DB;
         if (empty($quiz->allowjsinsertion)) {
