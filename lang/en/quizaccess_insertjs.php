@@ -18,7 +18,7 @@
  * Strings for the quizaccess_insertjs plugin.
  *
  * @package    quizaccess_insertjs
- * @author     Prof. P Sunthar
+ * @author     Prof. P Sunthar, Kashmira N
  * @copyright  2020 Indian Institute Of Technology Bombay, India
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
