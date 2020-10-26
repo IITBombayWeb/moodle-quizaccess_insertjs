@@ -161,10 +161,36 @@ class quizaccess_insertjs extends quiz_access_rule_base {
         //             get_string('description', 'quizaccess_insertjs'));
         // $mform->addElement('html', '<hr>');
 
-        // Setting to enable JS insertion.
+        // Allow JS insertion form field.
         $mform->addElement('selectyesno', 'allowjsinsertion',
                     get_string('allowjsinsertion', 'quizaccess_insertjs'));
         $mform->addHelpButton('allowjsinsertion', 'allowjsinsertion', 'quizaccess_insertjs');
         $mform->setDefault('allowjsinsertion', 0);
+    }
+
+    public static function save_settings($quiz) {
+        global $DB;
+        if (empty($quiz->allowjsinsertion)) {
+            $DB->delete_records('quizaccess_insertjs', array('quizid' => $quiz->id));
+        } else {
+            if (!$DB->record_exists('quizaccess_insertjs', array('quizid' => $quiz->id))) {
+                $record = new stdClass();
+                $record->quizid = $quiz->id;
+                $record->allowjsinsertion = 1;
+                $DB->insert_record('quizaccess_insertjs', $record);
+            }
+        }
+    }
+
+    public static function delete_settings($quiz) {
+        global $DB;
+        $DB->delete_records('quizaccess_insertjs', array('quizid' => $quiz->id));
+    }
+
+    public static function get_settings_sql($quizid) {
+        return array(
+            'allowjsinsertion',
+            'LEFT JOIN {quizaccess_insertjs} insertjs ON insertjs.quizid = quiz.id',
+            array());
     }
 }
