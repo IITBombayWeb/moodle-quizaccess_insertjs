@@ -73,7 +73,7 @@ class quizaccess_insertjs extends quiz_access_rule_base {
                 if ($attemptobj->get_userid() != $USER->id) {
                     throw new moodle_quiz_exception($attemptobj->get_quizobj(), 'notyourattempt');
                 } else {
-                    $flag = 1;
+                    // $flag = 1;
                     // echo "<br><br><br>here in";
 
                     $result .= "<script>
@@ -88,7 +88,7 @@ class quizaccess_insertjs extends quiz_access_rule_base {
                                 $('</br>')
                             );
                             document.getElementById('demo').innerHTML = 'Demo text: ' + '$username';
-
+                            
                         });                        
                     }
                     </script>";
@@ -98,10 +98,13 @@ class quizaccess_insertjs extends quiz_access_rule_base {
         } else {
             echo "fresh attempt";
             echo "end ---";
-            $flag = 1;
+            // $flag = 1;
         }
 
-    	return $result;  //used as a prevent message  
+        // Comment: Only gets inserted during admin preview and not actual student attempt
+        // as it prevents attempt
+        return $result;  // used as a prevent message
+        // return false;  
     }  
 }
 
