@@ -52,7 +52,7 @@ class quizaccess_insertjs extends quiz_access_rule_base {
     	$result = "";
         $flag = 0;
         
-        // Log stmts
+        // Log stmts.
         echo '<br><br><br>';
         $fn = 'setup_attempt_page';
         $this->debuglog($fn, "begin ---");
@@ -118,24 +118,30 @@ class quizaccess_insertjs extends quiz_access_rule_base {
         $this->debuglog($fn, "end ---");
     }
 
+    // Function to generate logs.
     public function debuglog($fn = '', $msgarg = '', $obj = null) {
         global $CFG;
         $msg = $msgarg;
         $log = null;
         $result = '';
+
+        // Files to save logs.
         // $logs_temp = $CFG->dirroot . "/mod/quiz/accessrule/insertjs/logs_temp.text";
         // $logs = $CFG->dirroot . "/mod/quiz/accessrule/insertjs/logs.text";
-
         // $fp = fopen($logs_temp,"a+");
         // if( $fp == false ) {
         //     echo ( "Error in opening file" );
         //     exit();
         // }
-
-        $log = "<br>debug: " . date('D M d Y H:i:s'). " " . (microtime(True)*10000) . ", " . "rule.php | " . $fn;
+        
+        // Record timestamp.
+        $log = "<br>debug: " . date('D M d Y H:i:s'). " " . (microtime(True)*10000);
+        // Capture file and function name.
+        $log .= ", " . "rule.php | " . $fn;
+        // Log debug msg.
         if ($msg !== '')
             $log .= ", " . $msg;
-
+        // Display objects passed, if any.
         if (!empty($obj)) {
 //             echo '<br><br><br>in debuglog record obj ---';
 //             print_object($obj);
@@ -143,17 +149,21 @@ class quizaccess_insertjs extends quiz_access_rule_base {
                 $log .= "; $key => $value";
             }
         }
+
+        // Print log.
         echo $log;
     }
 
     public static function add_settings_form_fields(
         mod_quiz_mod_form $quizform, MoodleQuickForm $mform) {
 
+        // Add separate header.
         // $mform->addElement('header', 'insertjsheader', 'Insert JS');
         // $mform->addElement('static', 'description', 'Insert JS',
         //             get_string('description', 'quizaccess_insertjs'));
         // $mform->addElement('html', '<hr>');
 
+        // Setting to enable JS insertion.
         $mform->addElement('select', 'insertjsrequired',
                     get_string('insertjsrequired', 'quizaccess_insertjs'), array(
                         0 => get_string('notrequired', 'quizaccess_insertjs'),
