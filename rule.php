@@ -40,8 +40,8 @@ class quizaccess_insertjs extends quiz_access_rule_base {
         return new self ( $quizobj, $timenow );
     }
         
-    // public function prevent_access() {
-    public function prevent_new_attempt($numprevattempts, $lastattempt) {	
+    public function prevent_access() {
+    // public function prevent_new_attempt($numprevattempts, $lastattempt) {	
         global $CFG, $PAGE, $_SESSION, $DB, $USER, $HBCFG;
         $PAGE->requires->jquery();
         // echo "<br><br><br>hi";
@@ -50,25 +50,57 @@ class quizaccess_insertjs extends quiz_access_rule_base {
     	$result = "";
         $flag = 0;
         
-        // echo "<br><br><br>here in";
-        $result .= "<script>
-        function insertJS() {
-            $(document).ready(function() {
-                
-                $('.quizattempt').prepend(
-                    $('</br>'),
-                    $('<p>', {
-                        'id':'demo'
-                    }),
-                    $('</br>')
-                );
-                document.getElementById('demo').innerHTML = 'Hey';
+        // User details.
+        $sessionkey = sesskey();
+        $sessionkeyJS = json_encode($sessionkey);
+        $userid     = $USER->id;
+        $username   = $USER->username;
 
-            });                        
+        // Quiz details.
+        $quiz       = $this->quizobj->get_quiz();
+        $quizid     = $this->quizobj->get_quizid();
+        $cmid       = $this->quizobj->get_cmid();
+
+        if ($unfinishedattempt = quiz_get_user_attempt_unfinished($quiz->id, $USER->id)) {
+            $unfinishedattemptid = $unfinishedattempt->id;
+            $unfinished = $unfinishedattempt->state == quiz_attempt::IN_PROGRESS;
+
+            if ($unfinished) {
+                $attemptid  = $unfinishedattempt->id;
+                $attemptobj = quiz_attempt::create($attemptid);
+
+                // Check that this attempt belongs to this user.
+                if ($attemptobj->get_userid() != $USER->id) {
+                    throw new moodle_quiz_exception($attemptobj->get_quizobj(), 'notyourattempt');
+                } else {
+                    $flag = 1;
+                    // echo "<br><br><br>here in";
+
+                    $result .= "<script>
+                    function insertJS() {
+                        $(document).ready(function() {
+        					
+                            $('.submitbtns').prepend(
+                                $('</br>'),
+                                $('<p>', {
+                                    'id':'demo'
+                                }),
+                                $('</br>')
+                            );
+                            document.getElementById('demo').innerHTML = 'Demo text: ' + '$username';
+
+                        });                        
+                    }
+                    </script>";
+                    $result .= "<script type='text/javascript'>insertJS();</script>";
+                }
+            }
+        } else {
+            echo "fresh attempt";
+            echo "end ---";
+            $flag = 1;
         }
-        </script>";
-        $result .= "<script type='text/javascript'>insertJS();</script>";
-                    
+
     	return $result;  //used as a prevent message  
     }  
 }
