@@ -3,13 +3,13 @@ export const start = (quizname, fullname, idnumber, proctorid, quizid, username,
     if (window.location !== window.parent.location) {
         window.parent.postMessage({
             'msg':              'start',            //Mandatory
-            'ExamTitle':        '${quizname}',      //Optional
-            'ExamDetails':      '${quizid}',        //Optional
-            'EnrolmentNumber':  '${userid}',        //Optional
-            'Name':             '${fullname}',      //Optional
-            'StudentId':        '${idnumber}',      //Optional
-            'AttemptNumber':    '${quizattempts}',  //Optional
-            'Proctor':          '${proctorid}',     //Proctoring group id
+            'ExamTitle':        `${quizname}`,      //Optional
+            'ExamDetails':      `${quizid}`,        //Optional
+            'EnrolmentNumber':  `${userid}`,        //Optional
+            'Name':             `${fullname}`,      //Optional
+            'StudentId':        `${idnumber}`,      //Optional
+            'AttemptNumber':    `${quizattempts}`,  //Optional
+            'Proctor':          `${proctorid}`,     //Proctoring group id
         }, "*");
     }
 };
@@ -18,7 +18,7 @@ export const finish = (first, last) => {
     window.console.log(`The user name is '${first}' and the id is '${last}'`);
     if (window.location !== window.parent.location) {
         window.parent.postMessage({
-            'msg': 'stop'
+            'msg': 'stop',
         }, "*");
     }
 };
