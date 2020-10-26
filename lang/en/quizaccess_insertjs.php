@@ -26,9 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Insert JS';
-$string['notrequired'] = 'No';
-$string['insertjsrequired'] = 'Enable JS insertion for assessment portal';
-$string['insertjsrequired_help'] = 'The following settings pertain to the JS insertion plugin for assessment portal';
-$string['insertjsrequiredoption'] = 'Yes';
-$string['description'] = 'The following settings pertain to the JS insertion plugin for assessment portal';
+$string['allowjsinsertion'] = 'Allow JS insertion for assessment portal';
+$string['allowjsinsertion_help'] = 'If enabled, it allows insertion of JS for assessment portal.';
+$string['description'] = 'The following settings pertain to the JS insertion plugin for assessment portal.';
 

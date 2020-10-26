@@ -123,7 +123,6 @@ class quizaccess_insertjs extends quiz_access_rule_base {
         global $CFG;
         $msg = $msgarg;
         $log = null;
-        $result = '';
 
         // Files to save logs.
         // $logs_temp = $CFG->dirroot . "/mod/quiz/accessrule/insertjs/logs_temp.text";
@@ -149,7 +148,6 @@ class quizaccess_insertjs extends quiz_access_rule_base {
                 $log .= "; $key => $value";
             }
         }
-
         // Print log.
         echo $log;
     }
@@ -164,11 +162,9 @@ class quizaccess_insertjs extends quiz_access_rule_base {
         // $mform->addElement('html', '<hr>');
 
         // Setting to enable JS insertion.
-        $mform->addElement('select', 'insertjsrequired',
-                    get_string('insertjsrequired', 'quizaccess_insertjs'), array(
-                        0 => get_string('notrequired', 'quizaccess_insertjs'),
-                        1 => get_string('insertjsrequiredoption', 'quizaccess_insertjs')
-                ));
-        $mform->addHelpButton('insertjsrequired', 'insertjsrequired', 'quizaccess_insertjs');
+        $mform->addElement('selectyesno', 'allowjsinsertion',
+                    get_string('allowjsinsertion', 'quizaccess_insertjs'));
+        $mform->addHelpButton('allowjsinsertion', 'allowjsinsertion', 'quizaccess_insertjs');
+        $mform->setDefault('allowjsinsertion', 0);
     }
 }
