@@ -145,4 +145,20 @@ class quizaccess_insertjs extends quiz_access_rule_base {
         }
         echo $log;
     }
+
+    public static function add_settings_form_fields(
+        mod_quiz_mod_form $quizform, MoodleQuickForm $mform) {
+
+        // $mform->addElement('header', 'insertjsheader', 'Insert JS');
+        // $mform->addElement('static', 'description', 'Insert JS',
+        //             get_string('description', 'quizaccess_insertjs'));
+        // $mform->addElement('html', '<hr>');
+
+        $mform->addElement('select', 'insertjsrequired',
+                    get_string('insertjsrequired', 'quizaccess_insertjs'), array(
+                        0 => get_string('notrequired', 'quizaccess_insertjs'),
+                        1 => get_string('insertjsrequiredoption', 'quizaccess_insertjs')
+                ));
+        $mform->addHelpButton('insertjsrequired', 'insertjsrequired', 'quizaccess_insertjs');
+    }
 }
