@@ -39,16 +39,23 @@ class quizaccess_insertjs extends quiz_access_rule_base {
         // This rule is always used, even if the quiz has no open or close date.
         return new self ( $quizobj, $timenow );
     }
-        
-    public function prevent_access() {
+    
+    public function setup_attempt_page($page) {
+    // public function end_time($attempt) { // Limitation: Ends quiz as timer text is replaced by result msg
+    // public function prevent_access() {   // Limitation: Prevents access
     // public function prevent_new_attempt($numprevattempts, $lastattempt) {	
         global $CFG, $PAGE, $_SESSION, $DB, $USER, $HBCFG;
         $PAGE->requires->jquery();
-        // echo "<br><br><br>hi";
+        
         $id = optional_param ( 'id', 0, PARAM_INT );
         $cm = get_coursemodule_from_id ('quiz', $id);
     	$result = "";
         $flag = 0;
+        
+        // Log stmts
+        echo '<br><br><br>';
+        $fn = 'setup_attempt_page';
+        $this->debuglog($fn, "begin ---");
         
         // User details.
         $sessionkey = sesskey();
@@ -74,37 +81,68 @@ class quizaccess_insertjs extends quiz_access_rule_base {
                     throw new moodle_quiz_exception($attemptobj->get_quizobj(), 'notyourattempt');
                 } else {
                     // $flag = 1;
-                    // echo "<br><br><br>here in";
-
+                    // echo "<br><br><br>in if unfinished block ---";
                     $result .= "<script>
-                    function insertJS() {
-                        $(document).ready(function() {
-        					
-                            $('.submitbtns').prepend(
-                                $('</br>'),
-                                $('<p>', {
-                                    'id':'demo'
-                                }),
-                                $('</br>')
-                            );
-                            document.getElementById('demo').innerHTML = 'Demo text: ' + '$username';
-                            
-                        });                        
-                    }
-                    </script>";
+                        function insertJS() {
+                            $(document).ready(function() {
+                                
+                                $('.submitbtns').prepend(
+                                    $('</br>'),
+                                    $('<p>', {
+                                        'id':'demo'
+                                    }),
+                                    $('</br>')
+                                );
+                                document.getElementById('demo').innerHTML = 'Demo text: ' + '$username';                                
+                            });                        
+                        }
+                        </script>";
                     $result .= "<script type='text/javascript'>insertJS();</script>";
                 }
             }
         } else {
-            echo "fresh attempt";
-            echo "end ---";
+            $this->debuglog($fn, "fresh attempt");
             // $flag = 1;
         }
+        $this->debuglog($fn, "end ---");
 
         // Comment: Only gets inserted during admin preview and not actual student attempt
         // as it prevents attempt
-        return $result;  // used as a prevent message
+        // return $result;  // used as a prevent message
         // return false;  
     }  
-}
 
+    public function current_attempt_finished() {
+        $fn = 'current_attempt_finished';
+        $this->debuglog($fn, "begin ---");
+        $this->debuglog($fn, "end ---");
+    }
+
+    public function debuglog($fn = '', $msgarg = '', $obj = null) {
+        global $CFG;
+        $msg = $msgarg;
+        $log = null;
+        $result = '';
+        // $logs_temp = $CFG->dirroot . "/mod/quiz/accessrule/insertjs/logs_temp.text";
+        // $logs = $CFG->dirroot . "/mod/quiz/accessrule/insertjs/logs.text";
+
+        // $fp = fopen($logs_temp,"a+");
+        // if( $fp == false ) {
+        //     echo ( "Error in opening file" );
+        //     exit();
+        // }
+
+        $log = "<br>debug: " . date('D M d Y H:i:s'). " " . (microtime(True)*10000) . ", " . "rule.php | " . $fn;
+        if ($msg !== '')
+            $log .= ", " . $msg;
+
+        if (!empty($obj)) {
+//             echo '<br><br><br>in debuglog record obj ---';
+//             print_object($obj);
+            foreach ($obj as $key => $value) {
+                $log .= "; $key => $value";
+            }
+        }
+        echo $log;
+    }
+}
