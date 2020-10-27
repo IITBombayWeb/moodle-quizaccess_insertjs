@@ -131,7 +131,7 @@ class quizaccess_insertjs extends quiz_access_rule_base {
                 // JS call
                 $first = 'Str1';
                 $last = 'Str2';
-                $PAGE->requires->js_call_amd('quizaccess_insertjs/etdisconnect', 'finish', array($first, $last));
+                $PAGE->requires->js_call_amd('quizaccess_insertjs/etconnect', 'finish', array($first, $last));
             }
         }
         $this->debuglog($fn, "end ---");
