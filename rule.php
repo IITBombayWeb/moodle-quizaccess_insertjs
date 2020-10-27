@@ -132,10 +132,44 @@ class quizaccess_insertjs extends quiz_access_rule_base {
     }  
 
     public function current_attempt_finished() {
-        $fn = 'current_attempt_finished';
-        $this->debuglog($fn, "begin ---");
-        $this->debuglog($fn, "end ---");
+        global $CFG, $PAGE, $_SESSION, $DB, $USER, $HBCFG;
+        // echo '<br><br><br> in current_attempt_finished ---';
+
+        // $fn = 'current_attempt_finished';
+        // $this->debuglog($fn, "begin ---");
+        
+        // Quiz details.
+        $quiz = $this->quizobj->get_quiz();
+        // echo "<br>================= quiz ==========================";
+        // print_object($quiz);
+        // echo "<br>==================== user =======================";
+        // print_object($USER);
+
+        if (!empty($quiz->allowjsinsertion)) {
+            // JS call
+            $first = 'Str1';
+            $last = 'Str2';
+            $PAGE->requires->js_call_amd('quizaccess_insertjs/etconnect', 'finish', array($first, $last));
+        }
+        // $this->debuglog($fn, "end ---");
     }
+
+    /**
+     * If this rule can determine that this user will never be allowed another attempt at
+     * this quiz, then return true. This is used so we can know whether to display a
+     * final grade on the view page. This will only be called if there is not a currently
+     * active attempt for this user.
+     * @param int $numattempts the number of previous attempts this user has made.
+     * @param object $lastattempt information about the user's last completed attempt.
+     * @return bool true if this rule means that this user will never be allowed another
+     * attempt at this quiz.
+     */
+    // public function is_finished($numprevattempts, $lastattempt) {
+    //     // echo '<br><br><br> in is_finished ---';
+    //     $fn = 'is_finished';
+    //     $this->debuglog($fn, "begin ---");
+    //     return false;
+    // }
 
     // Function to generate logs.
     public function debuglog($fn = '', $msgarg = '', $obj = null) {
