@@ -44,7 +44,7 @@ class quizaccess_insertjs extends quiz_access_rule_base {
     // public function end_time($attempt) { // Limitation: Ends quiz as timer text is replaced by result msg
     // public function prevent_access() {   // Limitation: Prevents access
     // public function prevent_new_attempt($numprevattempts, $lastattempt) {	
-        global $CFG, $PAGE, $_SESSION, $DB, $USER, $HBCFG;
+        global $CFG, $PAGE, $_SESSION, $DB, $USER;
         // $PAGE->requires->jquery();
         // echo '<br><br><br>';
         
@@ -97,6 +97,7 @@ class quizaccess_insertjs extends quiz_access_rule_base {
         $currentgroupname = groups_get_group_name($currentgroupid);
         // echo '<br>current grp id: ' . $currentgroupid; 
         // echo '<br>current grp name: ' . $currentgroupname; 
+        $attemptobj = null;
 
         if ($unfinishedattempt = quiz_get_user_attempt_unfinished($quiz->id, $USER->id)) {
             $unfinishedattemptid = $unfinishedattempt->id;
@@ -119,9 +120,19 @@ class quizaccess_insertjs extends quiz_access_rule_base {
                     }
                 }
             }
+            // echo '<br>atmpt state: ' .  $unfinishedattempt->state;
         } else {
+            // echo "<br>==================== this =======================";
+            // print_object($this);
             $this->debuglog($fn, "fresh attempt");
             // $flag = 1;
+
+            if (!empty($quiz->allowjsinsertion)) {
+                // JS call
+                $first = 'Str1';
+                $last = 'Str2';
+                $PAGE->requires->js_call_amd('quizaccess_insertjs/etdisconnect', 'finish', array($first, $last));
+            }
         }
         $this->debuglog($fn, "end ---");
 
@@ -131,17 +142,22 @@ class quizaccess_insertjs extends quiz_access_rule_base {
         // return false;  
     }  
 
+    /**
+     * This is called when the current attempt at the quiz is finished. This is
+     * used, for example by the password rule, to clear the flag in the session.
+     */
+    /*
     public function current_attempt_finished() {
-        global $CFG, $PAGE, $_SESSION, $DB, $USER, $HBCFG;
-        // echo '<br><br><br> in current_attempt_finished ---';
+        global $CFG, $PAGE, $_SESSION, $DB, $USER;
+        echo '<br><br><br> in current_attempt_finished ---';
 
         // $fn = 'current_attempt_finished';
         // $this->debuglog($fn, "begin ---");
         
         // Quiz details.
         $quiz = $this->quizobj->get_quiz();
-        // echo "<br>================= quiz ==========================";
-        // print_object($quiz);
+        echo "<br>================= quiz ==========================";
+        print_object($quiz);
         // echo "<br>==================== user =======================";
         // print_object($USER);
 
@@ -151,8 +167,9 @@ class quizaccess_insertjs extends quiz_access_rule_base {
             $last = 'Str2';
             $PAGE->requires->js_call_amd('quizaccess_insertjs/etconnect', 'finish', array($first, $last));
         }
-        // $this->debuglog($fn, "end ---");
+        $this->debuglog($fn, "end ---");
     }
+    */
 
     /**
      * If this rule can determine that this user will never be allowed another attempt at
